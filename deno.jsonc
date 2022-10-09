@@ -12,6 +12,7 @@
 		}
 	},
 	"tasks": {
-		"fetch": "deno run --allow-net --allow-write=. tasks/fetch-releases.deno.mjs"
+		"fetch": "deno run --allow-net --allow-write=. tasks/fetch-releases.deno.mjs",
+		"create-list": "deno run --allow-write=. tasks/create-file-list.deno.mjs"
 	}
 }
