@@ -1,0 +1,14 @@
+{
+	"lint": {
+		"rules": {
+			"tags": ["recommended"]
+		}
+	},
+	"fmt": {
+		"options": {
+			"useTabs": true,
+			"singleQuote": true,
+			"lineWidth": 120
+		}
+	}
+}
