@@ -1,5 +1,31 @@
+const reForGoodHead = (version) => new RegExp('^hugo_(extended_)?v?' + version + '_');
+
+const reForGoodTail = /\.tar\.gz$/;
+
+/**
+ * Create a good key name for query.
+ * @param {filename} Original filename in release assets. Requires good format.
+ * @return {string} Key format: "{os}_{arch}_{isEx|noEx}".
+ */
+function createQueryKey(filename, version) {
+	const shortName = filename
+		.replace(reForGoodHead(version), '')
+		.replace(reForGoodTail, '')
+		.toLowerCase()
+		.replace('-', '_');
+	let ex;
+	if (/^hugo_extend/.test(filename)) {
+		ex = 'hasEx';
+	} else if (reForGoodHead(version).test(filename)) {
+		ex = 'noEx';
+	} else {
+		throw new Error(`Program error: Bad filename format "${filename}".`);
+	}
+	return `${shortName}_${ex}`;
+}
+
 export function inspectReleases(releases) {
-	// Each passed: { tag, files: ['filename'...] }
+	// Each passed: { tag, 'queryKey': 'filename'... }
 	const passed = [];
 	// Each ignored: { tag, file, reason }...] }
 	const ignored = [];
@@ -14,8 +40,8 @@ export function inspectReleases(releases) {
 		if (!/^v\d{0,3}\.\d{0,3}(\.\d{0,3})?$/.test(tag)) {
 			throw new Error(`Program error: Unexpected format in tag name "${tag}".`);
 		}
+		const thisRelease = { tag };
 		const version = tag.replace(/^v/, '');
-		const goodFiles = [];
 
 		for (const eachAsset of eachRelease.assets) {
 			const file = eachAsset.name;
@@ -35,9 +61,7 @@ export function inspectReleases(releases) {
 			}
 
 			// Filter some files to unexpected:
-			const reForGoodHead = new RegExp('^hugo_(extended_)?v?' + version + '_');
-			const reForGoodTail = /\.tar\.gz$/;
-			if (!reForGoodHead.test(file)) {
+			if (!reForGoodHead(version).test(file)) {
 				unexpected.push({ tag, file, reason: 'unexpected_filename' });
 				// throw new Error(`Unexpected filename ${file} in v${version}.`);
 				continue; // early.
@@ -48,10 +72,11 @@ export function inspectReleases(releases) {
 				continue; // early.
 			}
 
-			goodFiles.push(file);
+			const key = createQueryKey(file, version);
+			thisRelease[key] = file;
 		} // looping eachAsset.
 
-		passed.push({ tag, files: goodFiles });
+		passed.push(thisRelease);
 	} // looping eachRelease.
 	return { passed, ignored, unexpected };
 }
