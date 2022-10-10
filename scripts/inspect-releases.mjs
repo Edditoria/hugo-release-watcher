@@ -14,6 +14,8 @@ export function inspectReleases(releases) {
 		if (!/^v\d{0,3}\.\d{0,3}(\.\d{0,3})?$/.test(tag)) {
 			throw new Error(`Program error: Unexpected format in tag name "${tag}".`);
 		}
+		const version = tag.replace(/^v/, '');
+		const goodFiles = [];
 
 		for (const eachAsset of eachRelease.assets) {
 			const file = eachAsset.name;
@@ -31,7 +33,25 @@ export function inspectReleases(releases) {
 				ignored.push({ tag, file, reason: 'windows_file' });
 				continue; // early.
 			}
+
+			// Filter some files to unexpected:
+			const reForGoodHead = new RegExp('^hugo_(extended_)?v?' + version + '_');
+			const reForGoodTail = /\.tar\.gz$/;
+			if (!reForGoodHead.test(file)) {
+				unexpected.push({ tag, file, reason: 'unexpected_filename' });
+				// throw new Error(`Unexpected filename ${file} in v${version}.`);
+				continue; // early.
+			}
+			if (!reForGoodTail.test(file)) {
+				unexpected.push({ tag, file, reason: 'unexpected_extension' });
+				// throw new Error(`Unexpected extension ${file} in v${version}.`);
+				continue; // early.
+			}
+
+			goodFiles.push(file);
 		} // looping eachAsset.
+
+		passed.push({ tag, files: goodFiles });
 	} // looping eachRelease.
 	return { passed, ignored, unexpected };
 }
