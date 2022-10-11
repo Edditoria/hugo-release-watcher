@@ -2,17 +2,36 @@ const reForGoodHead = (version) => new RegExp('^hugo_(extended_)?v?' + version +
 
 const reForGoodTail = /\.tar\.gz$/;
 
+// const goos = ['darwin', 'dragonfly', 'freebsd', 'linux', 'netbsd', 'openbsd', 'windows'];
+// const goarch = ['amd64', '386', 'arm', 'arm32'];
+const replacements = [
+	// For naming OS:
+	{ from: /^macos/, to: 'darwin' },
+	{ from: /^dragonflybsd/, to: 'dragonfly' },
+	// For naming arch:
+	{ from: /amd$/, to: '386' },
+	{ from: /64bit$/, to: 'amd64' },
+	{ from: /32bit$/, to: '386' },
+];
+
+const reForDarwin = /^darwin_(universal|all)_/;
+const replacersForDarwin = ['darwin_amd64_', 'darwin_arm64_'];
+
 /**
  * Create a good key name for query.
+ * NOTE: It will not handle "darwin_all" and "darwin_universal".
  * @param {filename} Original filename in release assets. Requires good format.
  * @return {string} Key format: "{os}_{arch}_{isEx|noEx}".
  */
 function createQueryKey(filename, version) {
-	const shortName = filename
+	let shortName = filename
 		.replace(reForGoodHead(version), '')
 		.replace(reForGoodTail, '')
 		.toLowerCase()
 		.replace('-', '_');
+	replacements.forEach((item) => {
+		shortName = shortName.replace(item.from, item.to);
+	});
 	let ex;
 	if (/^hugo_extend/.test(filename)) {
 		ex = 'hasEx';
@@ -73,6 +92,14 @@ export function inspectReleases(releases) {
 			}
 
 			const key = createQueryKey(file, version);
+			// Handle "darwin_all" and "darwin_universal":
+			if (reForDarwin.test(key)) {
+				replacersForDarwin.forEach((replacer) => {
+					const newKey = key.replace(reForDarwin, replacer);
+					thisRelease[newKey] = file;
+				});
+				continue; // early.
+			}
 			thisRelease[key] = file;
 		} // looping eachAsset.
 
