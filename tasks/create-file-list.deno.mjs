@@ -1,7 +1,7 @@
-import { createFileList } from '../scripts/create-file-list.mjs';
-import releaseData from '../reports/release-data.json' assert { type: 'json' };
+import inspectedData from '../reports/inspected-assets-list.json' assert { type: 'json' };
 
-const fileList = createFileList(releaseData);
+const outputData = inspectedData.passed;
 const outputFile = 'reports/file-list.json';
 await Deno.mkdir('reports', { recursive: true });
-await Deno.writeTextFile(outputFile, JSON.stringify(fileList, null, '\t'));
+await Deno.writeTextFile(outputFile, JSON.stringify(outputData, null, '\t'));
+console.log(`File written to ${outputFile}`);
