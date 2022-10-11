@@ -44,7 +44,7 @@ function createQueryKey(filename, version) {
 }
 
 export function inspectReleases(releases) {
-	// Each passed: { tag, 'queryKey': 'filename'... }
+	// Each passed: { tag, files: { 'queryKey': 'filename'... }
 	const passed = [];
 	// Each ignored: { tag, file, reason }...] }
 	const ignored = [];
@@ -59,7 +59,7 @@ export function inspectReleases(releases) {
 		if (!/^v\d{0,3}\.\d{0,3}(\.\d{0,3})?$/.test(tag)) {
 			throw new Error(`Program error: Unexpected format in tag name "${tag}".`);
 		}
-		const thisRelease = { tag };
+		const thisRelease = { tag, files: {} };
 		const version = tag.replace(/^v/, '');
 
 		for (const eachAsset of eachRelease.assets) {
@@ -96,11 +96,11 @@ export function inspectReleases(releases) {
 			if (reForDarwin.test(key)) {
 				replacersForDarwin.forEach((replacer) => {
 					const newKey = key.replace(reForDarwin, replacer);
-					thisRelease[newKey] = file;
+					thisRelease.files[newKey] = file;
 				});
 				continue; // early.
 			}
-			thisRelease[key] = file;
+			thisRelease.files[key] = file;
 		} // looping eachAsset.
 
 		passed.push(thisRelease);
