@@ -9,7 +9,7 @@ for (const eachRelease of inspectedData.passed) {
 	fileList.push(files);
 }
 
-const outputFile = 'reports/file-list.json';
+const outputFile = 'reports/hugo-releases.json';
 await Deno.mkdir('reports', { recursive: true });
 await Deno.writeTextFile(outputFile, JSON.stringify(fileList, null, '\t'));
 console.log(`File written to ${outputFile}`);
