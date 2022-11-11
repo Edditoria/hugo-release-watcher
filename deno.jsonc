@@ -15,6 +15,7 @@
 		"fetch": "deno run --allow-net --allow-write=. tasks/fetch-releases.deno.mjs",
 		"inspect": "deno run --allow-write=. tasks/inspect-releases.deno.mjs",
 		"create-json": "deno run --allow-write=. tasks/create-json.deno.mjs",
-		"export-csv": "deno run --allow-write=. tasks/export-csv.deno.mjs"
+		"export-csv": "deno run --allow-write=. tasks/export-csv.deno.mjs",
+		"print-keys": "deno run tasks/print-keys.deno.mjs"
 	}
 }
