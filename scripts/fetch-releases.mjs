@@ -17,6 +17,7 @@ export async function fetchReleases(owner, repo, max = 1000) {
 		console.log(`Fetching page ${p}...`);
 		const response = await fetch(`${url}&page=${p}`);
 		const result = await response.json();
+		console.log(`...${result.length} releases received.`);
 		if (result.length < 1) {
 			break;
 		}
