@@ -92,6 +92,7 @@ export function inspectReleases(releases) {
 			}
 
 			const key = createQueryKey(file, version);
+
 			// Handle "darwin_all" and "darwin_universal":
 			if (reForDarwin.test(key)) {
 				replacersForDarwin.forEach((replacer) => {
@@ -100,6 +101,20 @@ export function inspectReleases(releases) {
 				});
 				continue; // early.
 			}
+
+			// Throw error to avoid dropping file by mistake:
+			if (
+				// Key already exists:
+				Object.prototype.hasOwnProperty.call(thisRelease.files, key) &&
+				// Unless existing file has better name:
+				!/Linux-64bit\.tar\.gz$/.test(thisRelease.files[key])
+			) {
+				throw new Error(`Key ${key} already exists:
+	Original: ${thisRelease.files[key]};
+	New file: ${file} in v${version}.`);
+			}
+
+			// Finally:
 			thisRelease.files[key] = file;
 		} // looping eachAsset.
 
