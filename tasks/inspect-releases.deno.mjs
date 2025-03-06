@@ -1,5 +1,5 @@
 import { inspectReleases } from '../scripts/inspect-releases.mjs';
-import releaseData from '../reports/release-data.json' assert { type: 'json' };
+import releaseData from '../reports/release-data.json' with { type: 'json' };
 
 const report = inspectReleases(releaseData);
 const outputFile = 'reports/inspected-assets-list.json';

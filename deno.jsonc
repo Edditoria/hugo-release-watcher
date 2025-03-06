@@ -5,12 +5,10 @@
 		}
 	},
 	"fmt": {
-		"options": {
-			"useTabs": true,
-			"singleQuote": true,
-			"lineWidth": 120,
-			"proseWrap": "preserve"
-		}
+		"useTabs": true,
+		"singleQuote": true,
+		"lineWidth": 120,
+		"proseWrap": "preserve"
 	},
 	"tasks": {
 		"fetch": "deno run --allow-net --allow-write=. tasks/fetch-releases.deno.mjs",

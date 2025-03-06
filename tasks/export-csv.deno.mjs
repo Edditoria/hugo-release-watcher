@@ -1,4 +1,4 @@
-import inspectedData from '../reports/inspected-assets-list.json' assert { type: 'json' };
+import inspectedData from '../reports/inspected-assets-list.json' with { type: 'json' };
 
 const head = ['os', 'arch', 'extended', 'version', 'filename'];
 /** @type {string} */
